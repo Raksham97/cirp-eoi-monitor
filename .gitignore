@@ -6,3 +6,4 @@ __pycache__/
 .pytest_cache/
 coverage.xml
 *.sqlite3
+cirp_eoi.sqlite3

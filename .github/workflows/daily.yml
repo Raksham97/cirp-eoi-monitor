@@ -1,0 +1,82 @@
+name: Daily CIRP EOI Monitor
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '30 2 * * *' # 08:00 IST daily
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: cirp-eoi-daily
+  cancel-in-progress: false
+
+jobs:
+  update-and-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Restore durable state
+        run: python scripts/state.py restore
+
+      - name: Ingest IBBI Form G feed
+        env:
+          DATABASE_URL: sqlite+pysqlite:///./cirp_eoi.sqlite3
+          APP_PASSWORD: ''
+          FETCH_PDFS: 'true'
+        run: python -m app.cli ingest
+
+      - name: Build Excel
+        env:
+          DATABASE_URL: sqlite+pysqlite:///./cirp_eoi.sqlite3
+        run: python -m app.cli export --output docs/cirp-eoi-monitor.xlsx
+
+      - name: Build static dashboard
+        env:
+          DATABASE_URL: sqlite+pysqlite:///./cirp_eoi.sqlite3
+        run: python -m app.static_site --output docs
+
+      - name: Persist database as text state
+        run: python scripts/state.py dump
+
+      - name: Record heartbeat
+        run: date -u +'%Y-%m-%dT%H:%M:%SZ' > data/last_successful_run.txt
+
+      - name: Commit state and generated files
+        run: |
+          git config user.name 'cirp-eoi-bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git add data docs
+          if ! git diff --cached --quiet; then
+            git commit -m "data: daily CIRP EOI refresh $(date -u +%F)"
+            git push
+          fi
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+
+      - name: Deploy Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
