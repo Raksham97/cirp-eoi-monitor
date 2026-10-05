@@ -1,0 +1,43 @@
+# Optional Render Blueprint. The Terminal bootstrap script is the recommended path.
+databases:
+  - name: cirp-eoi-monitor-db
+    plan: basic-256mb
+    region: singapore
+    databaseName: cirp_eoi
+    user: cirp_eoi
+
+services:
+  - type: web
+    name: cirp-eoi-monitor
+    runtime: python
+    region: singapore
+    plan: starter
+    buildCommand: pip install -r requirements.txt
+    startCommand: python -m app.cli init-db && uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /healthz
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: cirp-eoi-monitor-db
+          property: connectionString
+      - key: APP_USERNAME
+        value: lawyer
+      - key: APP_PASSWORD
+        generateValue: true
+      - key: FETCH_PDFS
+        value: true
+  - type: cron
+    name: cirp-eoi-monitor-ingest
+    runtime: python
+    region: singapore
+    plan: starter
+    schedule: "30 20 * * *"
+    buildCommand: pip install -r requirements.txt
+    startCommand: python -m app.cli init-db && python -m app.cli ingest
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: cirp-eoi-monitor-db
+          property: connectionString
+      - key: FETCH_PDFS
+        value: true
