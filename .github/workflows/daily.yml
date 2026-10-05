@@ -12,11 +12,12 @@ permissions:
 
 concurrency:
   group: cirp-eoi-daily
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   update-and-deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -40,8 +41,8 @@ jobs:
         env:
           DATABASE_URL: sqlite+pysqlite:///./cirp_eoi.sqlite3
           APP_PASSWORD: ''
-          FETCH_PDFS: 'true'
-        run: python -m app.cli ingest
+          FETCH_PDFS: 'false'
+        run: python -m app.cli ingest --pages 8
 
       - name: Build Excel
         env:
