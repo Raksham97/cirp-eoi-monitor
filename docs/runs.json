@@ -1,0 +1,13 @@
+[
+  {
+    "started_at": "2026-10-05T18:12:43.011559",
+    "finished_at": "2026-10-05T18:12:49.977768",
+    "status": "success",
+    "pages_fetched": 8,
+    "rows_seen": 160,
+    "new_notices": 157,
+    "existing_notices": 3,
+    "errors": 0,
+    "error_summary": null
+  }
+]
