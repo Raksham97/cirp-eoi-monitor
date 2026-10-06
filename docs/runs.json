@@ -1,5 +1,16 @@
 [
   {
+    "started_at": "2026-10-06T09:10:31.514582",
+    "finished_at": "2026-10-06T09:10:38.855148",
+    "status": "success",
+    "pages_fetched": 8,
+    "rows_seen": 160,
+    "new_notices": 6,
+    "existing_notices": 154,
+    "errors": 0,
+    "error_summary": null
+  },
+  {
     "started_at": "2026-10-05T18:31:25.929039",
     "finished_at": "2026-10-05T18:31:32.990348",
     "status": "success",
