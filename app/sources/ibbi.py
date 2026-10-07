@@ -163,7 +163,7 @@ class IBBIClient:
         self.session.mount('https://', adapter)
         self.session.mount('http://', adapter)
         self.session.headers.update({
-            'User-Agent': 'CIRP-EOI-Monitor/2.0 (+public legal-notice monitoring; low-frequency)',
+            'User-Agent': 'CIRP-EOI-Monitor/2.1 (+public legal-notice monitoring; low-frequency)',
             'Accept': 'text/html,application/xhtml+xml,application/pdf;q=0.9,*/*;q=0.8',
             'Cache-Control': 'no-cache',
         })
@@ -184,13 +184,22 @@ class IBBIClient:
         raise last_exc
 
     def fetch_page(self, page: int) -> tuple[list[IBBIRow], int | None]:
+        """Fetch one logical page using IBBI's current 1-based paginator.
+
+        IBBI serves the first page both at /resolution-plans and at ?page=1.
+        Our crawler uses a zero-based logical index internally, so logical page 0
+        maps to the landing page, logical page 1 maps to ?page=2, etc. This avoids
+        double-counting the first 20 records during complete-source scans.
+        """
         base = urljoin(self.settings.ibbi_base_url, self.settings.ibbi_resolution_plans_path)
-        # Fetch the unpaginated landing page explicitly as page 0. This protects
-        # against Drupal-style zero-based pagination and avoids silently missing
-        # the newest page when the site's paginator changes semantics.
-        url = base if page == 0 else f'{base}?page={page}'
+        if page == 0:
+            url = base
+            source_page = 1
+        else:
+            source_page = page + 1
+            url = f'{base}?page={source_page}'
         r = self._get(url)
-        rows, total = parse_resolution_page(r.text, url, page)
+        rows, total = parse_resolution_page(r.text, url, source_page)
         return rows, total
 
     def fetch_pdf(self, url: str | None, extract_text: bool = True) -> PDFInfo:

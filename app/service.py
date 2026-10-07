@@ -180,12 +180,19 @@ def ingest(
     coverage_reached = coverage_floor is None
     old_only_streak = 0
     saw_dated_rows = False
+    expected_total: int | None = None
 
     try:
         for page_num in range(0, pages):
             rows, total = client.fetch_page(page_num)
             run.pages_fetched += 1
             if total is not None:
+                if expected_total is None:
+                    expected_total = total
+                elif total != expected_total:
+                    raise RuntimeError(
+                        f'IBBI Total Records changed during pagination: first={expected_total} page={page_num} current={total}'
+                    )
                 run.total_records_reported = total
 
             if page_num == 0:
@@ -229,6 +236,15 @@ def ingest(
                     errors.append(f'page {page_num} / {row.debtor_name}: {type(exc).__name__}: {exc}')
 
             db.commit()
+
+            if expected_total is not None:
+                if run.rows_seen > expected_total:
+                    raise RuntimeError(
+                        f'parsed row count exceeded official Total Records: parsed={run.rows_seen} official_total={expected_total}'
+                    )
+                if run.rows_seen == expected_total:
+                    coverage_reached = True
+                    break
 
             if coverage_floor is not None and saw_dated_rows and old_only_streak >= max(1, safety_old_pages):
                 coverage_reached = True
