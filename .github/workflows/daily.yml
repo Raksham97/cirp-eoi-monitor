@@ -17,7 +17,7 @@ concurrency:
 jobs:
   update-and-deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -43,20 +43,7 @@ jobs:
       - name: Independent IBBI source canary
         run: python scripts/ibbi_canary.py
 
-      - name: Choose coverage horizon
-        id: coverage
-        shell: bash
-        run: |
-          DOW="$(date -u +%u)"
-          if [ "$DOW" = "7" ]; then
-            echo "back_days=120" >> "$GITHUB_OUTPUT"
-            echo "max_pages=120" >> "$GITHUB_OUTPUT"
-          else
-            echo "back_days=10" >> "$GITHUB_OUTPUT"
-            echo "max_pages=25" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Ingest IBBI Form G feed with coverage proof
+      - name: Ingest complete IBBI Form G listing
         env:
           DATABASE_URL: sqlite+pysqlite:///./cirp_eoi.sqlite3
           APP_PASSWORD: ''
@@ -64,11 +51,10 @@ jobs:
           REQUEST_TIMEOUT_SECONDS: '25'
         run: >-
           python -m app.cli ingest
-          --pages ${{ steps.coverage.outputs.max_pages }}
-          --coverage-days-back ${{ steps.coverage.outputs.back_days }}
-          --safety-old-pages 2
+          --pages 400
+          --store-days-back 120
 
-      - name: Audit working-window coverage
+      - name: Audit complete-source and working-window coverage
         env:
           DATABASE_URL: sqlite+pysqlite:///./cirp_eoi.sqlite3
         run: python scripts/audit_working_window.py
@@ -95,7 +81,7 @@ jobs:
           git config user.email 'actions@users.noreply.github.com'
           git add data docs
           if ! git diff --cached --quiet; then
-            git commit -m "data: verified CIRP EOI refresh $(date -u +%F-%H%MZ)"
+            git commit -m "data: verified full-source CIRP refresh $(date -u +%F-%H%MZ)"
             git push
           fi
 

@@ -23,6 +23,8 @@ def main():
                           help='Fail unless crawl reaches this many days before today')
     p_ingest.add_argument('--safety-old-pages', type=int, default=2,
                           help='Consecutive all-old pages required before coverage is considered complete')
+    p_ingest.add_argument('--store-days-back', type=int, default=None,
+                          help='During full-source scans, persist only rows this many days back (undated rows are retained)')
     p_export = sub.add_parser('export')
     p_export.add_argument('--output', default='cirp-eoi-monitor.xlsx')
     sub.add_parser('stats')
@@ -44,6 +46,7 @@ def main():
                 pages,
                 coverage_days_back=args.coverage_days_back,
                 safety_old_pages=args.safety_old_pages,
+                store_days_back=args.store_days_back,
             )
             print(
                 f'run={run.id} status={run.status} pages={run.pages_fetched} '

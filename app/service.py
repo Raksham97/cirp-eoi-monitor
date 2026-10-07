@@ -157,6 +157,7 @@ def ingest(
     pages: int,
     coverage_days_back: int | None = None,
     safety_old_pages: int = 2,
+    store_days_back: int | None = None,
 ) -> CrawlRun:
     """Ingest IBBI pages and fail closed when the requested date horizon is not covered.
 
@@ -175,6 +176,7 @@ def ingest(
     warnings: list[str] = []
 
     coverage_floor = date.today() - timedelta(days=coverage_days_back) if coverage_days_back is not None else None
+    store_floor = date.today() - timedelta(days=store_days_back) if store_days_back is not None else None
     coverage_reached = coverage_floor is None
     old_only_streak = 0
     saw_dated_rows = False
@@ -211,6 +213,12 @@ def ingest(
 
             for row in rows:
                 run.rows_seen += 1
+                # Full-source reliability scans should not bloat the durable SQLite/Git
+                # state with years of closed historical rows. Count/validate every source
+                # row, but persist only the recent horizon plus undated rows (which need
+                # review because a deadline parser may have failed).
+                if store_floor is not None and row.eoi_deadline is not None and row.eoi_deadline < store_floor:
+                    continue
                 try:
                     # A SAVEPOINT isolates a bad row without rolling back successful rows
                     # or detaching the CrawlRun counters.
