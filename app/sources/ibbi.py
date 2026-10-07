@@ -14,8 +14,14 @@ import requests
 from bs4 import BeautifulSoup
 from dateutil import parser as date_parser
 from pypdf import PdfReader
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
 from ..config import Settings
+
+
+class SourceSchemaError(RuntimeError):
+    pass
 
 
 @dataclass
@@ -44,10 +50,15 @@ class PDFInfo:
 
 CIN_RE = re.compile(r'\b[UL][0-9]{5}[A-Z]{2}[0-9]{4}[A-Z]{3}[0-9]{6}\b')
 TOTAL_RE = re.compile(r'Total\s+Records\s*:\s*([0-9,]+)', re.IGNORECASE)
+REQUIRED_HEADER_TOKENS = (
+    'name of corporate debtor',
+    'last date for receipt of expression of interest',
+    'form g',
+)
 
 
 def parse_date(value: str | None) -> date | None:
-    if not value or not value.strip() or value.strip() in {'-', 'NA', 'N/A'}:
+    if not value or not value.strip() or value.strip().upper() in {'-', 'NA', 'N/A'}:
         return None
     try:
         return date_parser.parse(value, dayfirst=True, fuzzy=True).date()
@@ -72,19 +83,20 @@ def _decode_cin_from_href(href: str) -> str | None:
         return None
 
 
-def _find_table(soup: BeautifulSoup):
+def _find_resolution_table(soup: BeautifulSoup):
     for table in soup.find_all('table'):
         text = _normalize_space(table.get_text(' ', strip=True)).lower()
-        if 'name of corporate debtor' in text and 'expression of interest' in text:
+        if all(token in text for token in REQUIRED_HEADER_TOKENS):
             return table
-    return soup.find('table')
+    return None
 
 
 def parse_resolution_page(html: str, listing_url: str, page: int) -> tuple[list[IBBIRow], int | None]:
     soup = BeautifulSoup(html, 'html.parser')
-    table = _find_table(soup)
+    table = _find_resolution_table(soup)
     if table is None:
-        return [], None
+        title = _normalize_space(soup.title.get_text(' ', strip=True)) if soup.title else ''
+        raise SourceSchemaError(f'IBBI resolution table/header not found; page title={title!r}')
 
     rows: list[IBBIRow] = []
     for tr in table.find_all('tr'):
@@ -97,10 +109,8 @@ def parse_resolution_page(html: str, listing_url: str, page: int) -> tuple[list[
             continue
         links = [a.get('href') for a in tr.find_all('a', href=True)]
         cin = next((c for h in links if (c := _decode_cin_from_href(h))), None)
-        form_href = None
-        if len(cells) >= 6:
-            a = cells[5].find('a', href=True)
-            form_href = a.get('href') if a else None
+        a = cells[5].find('a', href=True) if len(cells) >= 6 else None
+        form_href = a.get('href') if a else None
         if not form_href:
             form_href = next((h for h in links if h and ('.pdf' in h.lower() or 'resolution_plan' in h.lower())), None)
         form_url = urljoin(listing_url, form_href) if form_href else None
@@ -128,6 +138,7 @@ def parse_resolution_page(html: str, listing_url: str, page: int) -> tuple[list[
             source_page=page,
             raw=raw,
         ))
+
     page_text = soup.get_text(' ', strip=True)
     m = TOTAL_RE.search(page_text)
     total = int(m.group(1).replace(',', '')) if m else None
@@ -138,9 +149,23 @@ class IBBIClient:
     def __init__(self, settings: Settings):
         self.settings = settings
         self.session = requests.Session()
+        retry = Retry(
+            total=4,
+            connect=4,
+            read=4,
+            status=4,
+            backoff_factor=1.0,
+            status_forcelist=(429, 500, 502, 503, 504),
+            allowed_methods=frozenset({'GET', 'HEAD'}),
+            raise_on_status=False,
+        )
+        adapter = HTTPAdapter(max_retries=retry, pool_connections=4, pool_maxsize=8)
+        self.session.mount('https://', adapter)
+        self.session.mount('http://', adapter)
         self.session.headers.update({
-            'User-Agent': 'CIRP-EOI-Monitor/1.0 (+public legal-notice monitoring; polite crawler)',
+            'User-Agent': 'CIRP-EOI-Monitor/2.0 (+public legal-notice monitoring; low-frequency)',
             'Accept': 'text/html,application/xhtml+xml,application/pdf;q=0.9,*/*;q=0.8',
+            'Cache-Control': 'no-cache',
         })
 
     def _get(self, url: str) -> requests.Response:
@@ -149,6 +174,8 @@ class IBBIClient:
             try:
                 r = self.session.get(url, timeout=self.settings.request_timeout_seconds)
                 r.raise_for_status()
+                if not r.content:
+                    raise RuntimeError('empty upstream response')
                 return r
             except Exception as exc:
                 last_exc = exc
@@ -158,17 +185,13 @@ class IBBIClient:
 
     def fetch_page(self, page: int) -> tuple[list[IBBIRow], int | None]:
         base = urljoin(self.settings.ibbi_base_url, self.settings.ibbi_resolution_plans_path)
-        url = f'{base}?page={page}'
+        # Fetch the unpaginated landing page explicitly as page 0. This protects
+        # against Drupal-style zero-based pagination and avoids silently missing
+        # the newest page when the site's paginator changes semantics.
+        url = base if page == 0 else f'{base}?page={page}'
         r = self._get(url)
-        return parse_resolution_page(r.text, url, page)
-
-    def iter_pages(self, max_pages: int):
-        for page in range(1, max_pages + 1):
-            rows, total = self.fetch_page(page)
-            yield page, rows, total
-            if not rows:
-                break
-            time.sleep(self.settings.request_delay_seconds)
+        rows, total = parse_resolution_page(r.text, url, page)
+        return rows, total
 
     def fetch_pdf(self, url: str | None, extract_text: bool = True) -> PDFInfo:
         if not url:
@@ -187,9 +210,7 @@ class IBBIClient:
             if extract_text:
                 try:
                     reader = PdfReader(io.BytesIO(content))
-                    parts = []
-                    for page in reader.pages[:8]:
-                        parts.append(page.extract_text() or '')
+                    parts = [(page.extract_text() or '') for page in reader.pages[:8]]
                     text = _normalize_space(' '.join(parts))[:30000]
                     status = 'text_extracted' if len(text) >= 120 else 'scan_or_sparse_text'
                 except Exception:

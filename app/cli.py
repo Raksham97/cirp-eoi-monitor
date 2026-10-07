@@ -18,7 +18,11 @@ def main():
     sub = parser.add_subparsers(dest='cmd', required=True)
     sub.add_parser('init-db')
     p_ingest = sub.add_parser('ingest')
-    p_ingest.add_argument('--pages', type=int, default=None)
+    p_ingest.add_argument('--pages', type=int, default=None, help='Maximum pages to crawl')
+    p_ingest.add_argument('--coverage-days-back', type=int, default=None,
+                          help='Fail unless crawl reaches this many days before today')
+    p_ingest.add_argument('--safety-old-pages', type=int, default=2,
+                          help='Consecutive all-old pages required before coverage is considered complete')
     p_export = sub.add_parser('export')
     p_export.add_argument('--output', default='cirp-eoi-monitor.xlsx')
     sub.add_parser('stats')
@@ -34,9 +38,23 @@ def main():
             pages = args.pages
             if pages is None:
                 pages = settings.monday_deep_pages if datetime.now().weekday() == 0 else settings.daily_pages
-            run = ingest(settings, db, pages)
-            print(f'run={run.id} status={run.status} pages={run.pages_fetched} rows={run.rows_seen} new={run.new_notices} existing={run.existing_notices} errors={run.errors}')
-            if run.status in {'failed','anomaly'}:
+            run = ingest(
+                settings,
+                db,
+                pages,
+                coverage_days_back=args.coverage_days_back,
+                safety_old_pages=args.safety_old_pages,
+            )
+            print(
+                f'run={run.id} status={run.status} pages={run.pages_fetched} '
+                f'rows={run.rows_seen} new={run.new_notices} existing={run.existing_notices} '
+                f'errors={run.errors} total={run.total_records_reported}'
+            )
+            # Fail closed. A partial source run must never replace the last known-good
+            # dashboard/Excel just because some rows were successfully processed.
+            if run.status != 'success':
+                if run.error_summary:
+                    print(run.error_summary)
                 raise SystemExit(2)
         elif args.cmd == 'export':
             payload = build_xlsx(db)

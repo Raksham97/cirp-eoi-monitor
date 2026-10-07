@@ -3,7 +3,7 @@ name: Daily CIRP EOI Monitor
 on:
   workflow_dispatch:
   schedule:
-    - cron: '30 2 * * *' # 08:00 IST daily
+    - cron: '30 2,12 * * *' # approx 08:00 and 18:00 IST
 
 permissions:
   contents: write
@@ -17,32 +17,61 @@ concurrency:
 jobs:
   update-and-deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
           cache: pip
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: pip install -r requirements.txt pytest
+
+      - name: Run reliability tests
+        run: python -m pytest -q
 
       - name: Restore durable state
         run: python scripts/state.py restore
 
-      - name: Ingest IBBI Form G feed
+      - name: Independent IBBI source canary
+        run: python scripts/ibbi_canary.py
+
+      - name: Choose coverage horizon
+        id: coverage
+        shell: bash
+        run: |
+          DOW="$(date -u +%u)"
+          if [ "$DOW" = "7" ]; then
+            echo "back_days=120" >> "$GITHUB_OUTPUT"
+            echo "max_pages=120" >> "$GITHUB_OUTPUT"
+          else
+            echo "back_days=10" >> "$GITHUB_OUTPUT"
+            echo "max_pages=25" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Ingest IBBI Form G feed with coverage proof
         env:
           DATABASE_URL: sqlite+pysqlite:///./cirp_eoi.sqlite3
           APP_PASSWORD: ''
           FETCH_PDFS: 'false'
-        run: python -m app.cli ingest --pages 8
+          REQUEST_TIMEOUT_SECONDS: '25'
+        run: >-
+          python -m app.cli ingest
+          --pages ${{ steps.coverage.outputs.max_pages }}
+          --coverage-days-back ${{ steps.coverage.outputs.back_days }}
+          --safety-old-pages 2
+
+      - name: Audit working-window coverage
+        env:
+          DATABASE_URL: sqlite+pysqlite:///./cirp_eoi.sqlite3
+        run: python scripts/audit_working_window.py
 
       - name: Build Excel
         env:
@@ -60,13 +89,13 @@ jobs:
       - name: Record heartbeat
         run: date -u +'%Y-%m-%dT%H:%M:%SZ' > data/last_successful_run.txt
 
-      - name: Commit state and generated files
+      - name: Commit only fully audited state and generated files
         run: |
           git config user.name 'cirp-eoi-bot'
           git config user.email 'actions@users.noreply.github.com'
           git add data docs
           if ! git diff --cached --quiet; then
-            git commit -m "data: daily CIRP EOI refresh $(date -u +%F)"
+            git commit -m "data: verified CIRP EOI refresh $(date -u +%F-%H%MZ)"
             git push
           fi
 
