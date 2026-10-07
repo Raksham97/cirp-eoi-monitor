@@ -1,7 +1,13 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
-from datetime import date, datetime, timedelta, timezone
+import sys
+from datetime import date, timedelta, timezone
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 
 from sqlalchemy import select
 

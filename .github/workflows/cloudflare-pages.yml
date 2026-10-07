@@ -39,20 +39,15 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          EXPECTED="$(python - <<'PY'
-import json
-print(json.load(open('docs/data.json'))['meta']['generated_at'])
-PY
-)"
+          EXPECTED="$(python -c "import json; print(json.load(open('docs/data.json'))['meta']['generated_at'])")"
           ok=0
           for i in $(seq 1 20); do
             if curl -fsS -H 'Cache-Control: no-cache' "https://brief-view-c5b417.pages.dev/data.json?verify=${GITHUB_RUN_ID}-${i}" -o /tmp/live.json; then
-              LIVE="$(python - <<'PY'
-import json
-print(json.load(open('/tmp/live.json'))['meta']['generated_at'])
-PY
-)"
-              if [ "$LIVE" = "$EXPECTED" ]; then ok=1; break; fi
+              LIVE="$(python -c "import json; print(json.load(open('/tmp/live.json'))['meta']['generated_at'])")"
+              if [ "$LIVE" = "$EXPECTED" ]; then
+                ok=1
+                break
+              fi
             fi
             sleep 3
           done
