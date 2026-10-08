@@ -1,14 +1,14 @@
 {
   "meta": {
-    "generated_at": "2026-10-08T09:14:28.309742+00:00",
+    "generated_at": "2026-10-08T18:58:26.904671+00:00",
     "window": {
       "future_days": 30,
       "recently_closed_days": 10
     },
     "latest_run": {
       "status": "success",
-      "started_at": "2026-10-08T09:11:53.697322",
-      "finished_at": "2026-10-08T09:14:25.900406",
+      "started_at": "2026-10-08T18:56:10.228753",
+      "finished_at": "2026-10-08T18:58:23.827130",
       "pages_fetched": 191,
       "rows_seen": 3820,
       "new_notices": 0,
@@ -35,7 +35,7 @@
       "form_g_url": "https://ibbi.gov.in//uploads/resolution_plan/2026-09-28-171715-4afe7-d016289b72dda2c64f3875564f50d974.pdf",
       "listing_url": "https://ibbi.gov.in/resolution-plans?page=2",
       "first_seen_at": "2026-10-05T18:12:45.194749",
-      "last_seen_at": "2026-10-08T09:11:56.645199",
+      "last_seen_at": "2026-10-08T18:56:12.472412",
       "pdf_sha256": null
     },
     {
@@ -55,7 +55,7 @@
       "form_g_url": "https://ibbi.gov.in//uploads/resolution_plan/bbf2b90ee341e4fe055d5e082ed47cd5.pdf",
       "listing_url": "https://ibbi.gov.in/resolution-plans?page=2",
       "first_seen_at": "2026-10-05T18:12:45.188529",
-      "last_seen_at": "2026-10-08T09:11:56.642977",
+      "last_seen_at": "2026-10-08T18:56:12.468656",
       "pdf_sha256": null
     },
     {
@@ -75,7 +75,7 @@
       "form_g_url": "https://ibbi.gov.in//uploads/resolution_plan/50034f2b89ae8e1c1e4c3f03f163bdd2.pdf",
       "listing_url": "https://ibbi.gov.in/resolution-plans?page=2",
       "first_seen_at": "2026-10-05T18:12:45.189979",
-      "last_seen_at": "2026-10-08T09:11:56.643733",
+      "last_seen_at": "2026-10-08T18:56:12.469922",
       "pdf_sha256": null
     },
     {
@@ -95,7 +95,7 @@
       "form_g_url": "https://ibbi.gov.in//uploads/resolution_plan/9e1b2a8a252d13c8cbabe1c2b10c8d55.pdf",
       "listing_url": "https://ibbi.gov.in/resolution-plans?page=2",
       "first_seen_at": "2026-10-05T18:12:45.187176",
-      "last_seen_at": "2026-10-08T09:11:56.641518",
+      "last_seen_at": "2026-10-08T18:56:12.466160",
       "pdf_sha256": null
     },
     {
@@ -115,7 +115,7 @@
       "form_g_url": "https://ibbi.gov.in//uploads/resolution_plan/a9911605311063041d80af5d1fd69e55.pdf",
       "listing_url": "https://ibbi.gov.in/resolution-plans?page=2",
       "first_seen_at": "2026-10-05T18:12:45.178062",
-      "last_seen_at": "2026-10-08T09:11:56.638542",
+      "last_seen_at": "2026-10-08T18:56:12.461118",
       "pdf_sha256": null
     },
     {
@@ -135,7 +135,7 @@
       "form_g_url": "https://ibbi.gov.in//uploads/resolution_plan/83d4979be180579d458de57292a0db1c.pdf",
       "listing_url": "https://ibbi.gov.in/resolution-plans?page=2",
       "first_seen_at": "2026-10-05T18:12:45.179591",
-      "last_seen_at": "2026-10-08T09:11:56.639285",
+      "last_seen_at": "2026-10-08T18:56:12.462355",
       "pdf_sha256": null
     },
     {
@@ -155,7 +155,7 @@
       "form_g_url": "https://ibbi.gov.in//uploads/resolution_plan/2026-09-28-154019-3vurn-5c06ce6c0111806ecfd4fbad7e27f559.pdf",
       "listing_url": "https://ibbi.gov.in/resolution-plans?page=2",
       "first_seen_at": "2026-10-05T18:12:45.181106",
-      "last_seen_at": "2026-10-08T09:11:56.639998",
+      "last_seen_at": "2026-10-08T18:56:12.463602",
       "pdf_sha256": null
     },
     {
@@ -175,7 +175,7 @@
       "form_g_url": "https://ibbi.gov.in//uploads/resolution_plan/edeaf851a77b9af32495a7f447f8dc23.pdf",
       "listing_url": "https://ibbi.gov.in/resolution-plans?page=2",
       "first_seen_at": "2026-10-05T18:12:45.182512",
-      "last_seen_at": "2026-10-08T09:11:56.637783",
+      "last_seen_at": "2026-10-08T18:56:12.459841",
       "pdf_sha256": null
     },
     {
@@ -195,7 +195,7 @@
       "form_g_url": "https://ibbi.gov.in//uploads/resolution_plan/2026-09-28-134613-ojkpf-d8828f3e37858a8ac6fe1c11844d1caa.pdf",
       "listing_url": "https://ibbi.gov.in/resolution-plans?page=1",
       "first_seen_at": "2026-10-05T18:12:44.461391",
-      "last_seen_at": "2026-10-08T09:11:56.634792",
+      "last_seen_at": "2026-10-08T18:56:12.454862",
       "pdf_sha256": null
     },
     {
@@ -215,7 +215,7 @@
       "form_g_url": "https://ibbi.gov.in//uploads/resolution_plan/35005adcc22c2d1ad483de147757ac82.pdf",
       "listing_url": "https://ibbi.gov.in/resolution-plans?page=1",
       "first_seen_at": "2026-10-05T18:12:44.462690",
-      "last_seen_at": "2026-10-08T09:11:56.636295",
+      "last_seen_at": "2026-10-08T18:56:12.457358",
       "pdf_sha256": null
     },
     {
@@ -235,7 +235,7 @@
       "form_g_url": "https://ibbi.gov.in//uploads/resolution_plan/da97268eafc9ef6d25a181c02e26ca0c.pdf",
       "listing_url": "https://ibbi.gov.in/resolution-plans?page=1",
       "first_seen_at": "2026-10-05T18:12:44.464028",
-      "last_seen_at": "2026-10-08T09:11:56.632453",
+      "last_seen_at": "2026-10-08T18:56:12.451045",
       "pdf_sha256": null
     },
     {
@@ -255,7 +255,7 @@
       "form_g_url": "https://ibbi.gov.in//uploads/resolution_plan/73a351cd728f8d953716be06ce368070.pdf",
       "listing_url": "https://ibbi.gov.in/resolution-plans?page=1",
       "first_seen_at": "2026-10-05T18:12:44.466838",
-      "last_seen_at": "2026-10-08T09:11:56.633246",
+      "last_seen_at": "2026-10-08T18:56:12.452336",
       "pdf_sha256": null
     },
     {
@@ -275,7 +275,7 @@
       "form_g_url": "https://ibbi.gov.in//uploads/resolution_plan/2bfca731094988612563f3323cdb8db2.pdf",
       "listing_url": "https://ibbi.gov.in/resolution-plans?page=2",
       "first_seen_at": "2026-10-05T18:12:45.173640",
-      "last_seen_at": "2026-10-08T09:11:56.630675",
+      "last_seen_at": "2026-10-08T18:56:12.448353",
       "pdf_sha256": null
     },
     {
@@ -295,7 +295,7 @@
       "form_g_url": "https://ibbi.gov.in//uploads/resolution_plan/4e19ac2c03bdc41f06237febb03ed776.pdf",
       "listing_url": "https://ibbi.gov.in/resolution-plans?page=2",
       "first_seen_at": "2026-10-05T18:12:45.175398",
-      "last_seen_at": "2026-10-08T09:11:56.634024",
+      "last_seen_at": "2026-10-08T18:56:12.453620",
       "pdf_sha256": null
     },
     {
@@ -315,7 +315,7 @@
       "form_g_url": "https://ibbi.gov.in//uploads/resolution_plan/df618fe1e658ed6a6679ed6d5088fe37.pdf",
       "listing_url": "https://ibbi.gov.in/resolution-plans?page=1",
       "first_seen_at": "2026-10-05T18:12:44.457378",
-      "last_seen_at": "2026-10-08T09:11:55.527502",
+      "last_seen_at": "2026-10-08T18:56:11.760699",
       "pdf_sha256": null
     },
     {
@@ -335,7 +335,7 @@
       "form_g_url": "https://ibbi.gov.in//uploads/resolution_plan/15bf15d34c61d7fbdac7e1247fcc4be2.pdf",
       "listing_url": "https://ibbi.gov.in/resolution-plans?page=1",
       "first_seen_at": "2026-10-05T18:12:44.458691",
-      "last_seen_at": "2026-10-08T09:11:55.526752",
+      "last_seen_at": "2026-10-08T18:56:11.759410",
       "pdf_sha256": null
     },
     {
@@ -355,7 +355,7 @@
       "form_g_url": "https://ibbi.gov.in//uploads/resolution_plan/2026-10-05-190839-t618m-854e0347adccb77d85505019872d27c3.pdf",
       "listing_url": "https://ibbi.gov.in/resolution-plans?page=1",
       "first_seen_at": "2026-10-06T09:10:32.863240",
-      "last_seen_at": "2026-10-08T09:11:55.526004",
+      "last_seen_at": "2026-10-08T18:56:11.758144",
       "pdf_sha256": null
     },
     {
@@ -375,7 +375,7 @@
       "form_g_url": "https://ibbi.gov.in//uploads/resolution_plan/2026-09-30-124332-90ymq-d7d05740c5a97946bac34d875f4952f3.pdf",
       "listing_url": "https://ibbi.gov.in/resolution-plans?page=1",
       "first_seen_at": "2026-10-05T18:12:44.455993",
-      "last_seen_at": "2026-10-08T09:11:55.525276",
+      "last_seen_at": "2026-10-08T18:56:11.756836",
       "pdf_sha256": null
     },
     {
@@ -395,7 +395,7 @@
       "form_g_url": "https://ibbi.gov.in//uploads/resolution_plan/bde666ecf32bd91481183f5e68fc684a.pdf",
       "listing_url": "https://ibbi.gov.in/resolution-plans?page=1",
       "first_seen_at": "2026-10-05T18:12:44.449075",
-      "last_seen_at": "2026-10-08T09:11:55.523780",
+      "last_seen_at": "2026-10-08T18:56:11.754346",
       "pdf_sha256": null
     },
     {
@@ -415,7 +415,7 @@
       "form_g_url": "https://ibbi.gov.in//uploads/resolution_plan/fce019dda02670e9ad04879ea68c7c82.pdf",
       "listing_url": "https://ibbi.gov.in/resolution-plans?page=1",
       "first_seen_at": "2026-10-05T18:12:44.450412",
-      "last_seen_at": "2026-10-08T09:11:55.521509",
+      "last_seen_at": "2026-10-08T18:56:11.750499",
       "pdf_sha256": null
     },
     {
@@ -435,7 +435,7 @@
       "form_g_url": "https://ibbi.gov.in//uploads/resolution_plan/df43fa950f115bf707fe2d7476a52cbb.pdf",
       "listing_url": "https://ibbi.gov.in/resolution-plans?page=1",
       "first_seen_at": "2026-10-05T18:12:44.451740",
-      "last_seen_at": "2026-10-08T09:11:55.522290",
+      "last_seen_at": "2026-10-08T18:56:11.751782",
       "pdf_sha256": null
     },
     {
@@ -455,7 +455,7 @@
       "form_g_url": "https://ibbi.gov.in//uploads/resolution_plan/2026-10-02-123240-3l0pt-19dd9ca9cd450464dd57eedec62e24ac.pdf",
       "listing_url": "https://ibbi.gov.in/resolution-plans?page=1",
       "first_seen_at": "2026-10-05T18:12:44.453154",
-      "last_seen_at": "2026-10-08T09:11:55.523022",
+      "last_seen_at": "2026-10-08T18:56:11.753074",
       "pdf_sha256": null
     },
     {
@@ -475,7 +475,7 @@
       "form_g_url": "https://ibbi.gov.in//uploads/resolution_plan/61dd15ba8c007f18ec513f26c8e8d48f.pdf",
       "listing_url": "https://ibbi.gov.in/resolution-plans",
       "first_seen_at": "2026-10-07T06:26:31.072690",
-      "last_seen_at": "2026-10-08T09:11:55.520752",
+      "last_seen_at": "2026-10-08T18:56:11.749212",
       "pdf_sha256": null
     },
     {
@@ -495,7 +495,7 @@
       "form_g_url": "https://ibbi.gov.in//uploads/resolution_plan/0fb73e0e8ced83e553048b7994a9f915.pdf",
       "listing_url": "https://ibbi.gov.in/resolution-plans?page=1",
       "first_seen_at": "2026-10-05T18:12:44.444764",
-      "last_seen_at": "2026-10-08T09:11:55.519251",
+      "last_seen_at": "2026-10-08T18:56:11.746659",
       "pdf_sha256": null
     },
     {
@@ -515,7 +515,7 @@
       "form_g_url": "https://ibbi.gov.in//uploads/resolution_plan/819418cabd0744255488b43bb2d655fb.pdf",
       "listing_url": "https://ibbi.gov.in/resolution-plans?page=1",
       "first_seen_at": "2026-10-05T18:12:44.446107",
-      "last_seen_at": "2026-10-08T09:11:55.519989",
+      "last_seen_at": "2026-10-08T18:56:11.747921",
       "pdf_sha256": null
     },
     {
@@ -535,7 +535,7 @@
       "form_g_url": "https://ibbi.gov.in//uploads/resolution_plan/2026-10-03-112849-kv5gx-af14b6c8924cb194a7516f7bc6850b73.pdf",
       "listing_url": "https://ibbi.gov.in/resolution-plans?page=1",
       "first_seen_at": "2026-10-05T18:12:44.447457",
-      "last_seen_at": "2026-10-08T09:11:55.518480",
+      "last_seen_at": "2026-10-08T18:56:11.745377",
       "pdf_sha256": null
     },
     {
@@ -555,7 +555,7 @@
       "form_g_url": "https://ibbi.gov.in//uploads/resolution_plan/2026-10-05-121608-fvs1z-d792e66db9f1cfbd856678de5443080f.pdf",
       "listing_url": "https://ibbi.gov.in/resolution-plans?page=1",
       "first_seen_at": "2026-10-05T18:12:44.443403",
-      "last_seen_at": "2026-10-08T09:11:55.517711",
+      "last_seen_at": "2026-10-08T18:56:11.744109",
       "pdf_sha256": null
     },
     {
@@ -575,7 +575,7 @@
       "form_g_url": "https://ibbi.gov.in//uploads/resolution_plan/b8ff2f46c3d2429f603a141c4c7f80e5.pdf",
       "listing_url": "https://ibbi.gov.in/resolution-plans",
       "first_seen_at": "2026-10-07T06:26:31.062712",
-      "last_seen_at": "2026-10-08T09:11:55.516152",
+      "last_seen_at": "2026-10-08T18:56:11.741523",
       "pdf_sha256": null
     },
     {
@@ -595,7 +595,7 @@
       "form_g_url": "https://ibbi.gov.in//uploads/resolution_plan/2026-10-05-164635-ly9ef-064f597c5b3d9ac65db7b7cc2a7fca15.pdf",
       "listing_url": "https://ibbi.gov.in/resolution-plans?page=1",
       "first_seen_at": "2026-10-06T09:10:32.852716",
-      "last_seen_at": "2026-10-08T09:11:55.515353",
+      "last_seen_at": "2026-10-08T18:56:11.740171",
       "pdf_sha256": null
     },
     {
@@ -615,7 +615,7 @@
       "form_g_url": "https://ibbi.gov.in//uploads/resolution_plan/1f8331e474c5e7dd060c57a419be3790.pdf",
       "listing_url": "https://ibbi.gov.in/resolution-plans",
       "first_seen_at": "2026-10-07T06:26:31.057341",
-      "last_seen_at": "2026-10-08T09:11:55.514527",
+      "last_seen_at": "2026-10-08T18:56:11.738809",
       "pdf_sha256": null
     },
     {
@@ -635,7 +635,7 @@
       "form_g_url": "https://ibbi.gov.in//uploads/resolution_plan/fc73ca26a7e803085e7d47eca31ac2f5.pdf",
       "listing_url": "https://ibbi.gov.in/resolution-plans?page=1",
       "first_seen_at": "2026-10-05T18:12:44.440012",
-      "last_seen_at": "2026-10-08T09:11:55.513645",
+      "last_seen_at": "2026-10-08T18:56:11.737428",
       "pdf_sha256": null
     },
     {
@@ -655,7 +655,7 @@
       "form_g_url": "https://ibbi.gov.in//uploads/resolution_plan/e049e841322483e616c9345c4cb077e0.pdf",
       "listing_url": "https://ibbi.gov.in/resolution-plans?page=2",
       "first_seen_at": "2026-10-05T18:12:45.196364",
-      "last_seen_at": "2026-10-08T09:11:57.376852",
+      "last_seen_at": "2026-10-08T18:56:13.156538",
       "pdf_sha256": null
     },
     {
@@ -675,7 +675,7 @@
       "form_g_url": "https://ibbi.gov.in//uploads/resolution_plan/2026-09-23-143334-ejqt9-77489d7cbc653b5f7e7085e218bec5f4.pdf",
       "listing_url": "https://ibbi.gov.in/resolution-plans?page=2",
       "first_seen_at": "2026-10-05T18:12:45.199027",
-      "last_seen_at": "2026-10-08T09:11:57.377673",
+      "last_seen_at": "2026-10-08T18:56:13.157824",
       "pdf_sha256": null
     },
     {
@@ -695,7 +695,7 @@
       "form_g_url": "https://ibbi.gov.in//uploads/resolution_plan/2026-10-05-130845-ayi2h-20ed1a12a630532a431de09c3bac38f8.pdf",
       "listing_url": "https://ibbi.gov.in/resolution-plans?page=2",
       "first_seen_at": "2026-10-05T18:12:45.201572",
-      "last_seen_at": "2026-10-08T09:11:57.379964",
+      "last_seen_at": "2026-10-08T18:56:13.161631",
       "pdf_sha256": null
     },
     {
@@ -715,7 +715,7 @@
       "form_g_url": "https://ibbi.gov.in//uploads/resolution_plan/2026-09-18-181855-szme1-77489d7cbc653b5f7e7085e218bec5f4.pdf",
       "listing_url": "https://ibbi.gov.in/resolution-plans?page=3",
       "first_seen_at": "2026-10-05T18:12:45.904631",
-      "last_seen_at": "2026-10-08T09:11:57.382923",
+      "last_seen_at": "2026-10-08T18:56:13.166583",
       "pdf_sha256": null
     },
     {
@@ -735,7 +735,7 @@
       "form_g_url": "https://ibbi.gov.in//uploads/resolution_plan/b90894f236cbf352bd1b892cf0036a56.pdf",
       "listing_url": "https://ibbi.gov.in/resolution-plans?page=3",
       "first_seen_at": "2026-10-05T18:12:45.905951",
-      "last_seen_at": "2026-10-08T09:11:57.381473",
+      "last_seen_at": "2026-10-08T18:56:13.164082",
       "pdf_sha256": null
     },
     {
@@ -755,7 +755,7 @@
       "form_g_url": "https://ibbi.gov.in//uploads/resolution_plan/30eec3bccc17dcb77cea0aee599955dd.pdf",
       "listing_url": "https://ibbi.gov.in/resolution-plans?page=3",
       "first_seen_at": "2026-10-05T18:12:45.907369",
-      "last_seen_at": "2026-10-08T09:11:57.383652",
+      "last_seen_at": "2026-10-08T18:56:13.167831",
       "pdf_sha256": null
     },
     {
@@ -775,7 +775,7 @@
       "form_g_url": "https://ibbi.gov.in//uploads/resolution_plan/e9c802ea84fe0c6b11b4a46a640b176c.pdf",
       "listing_url": "https://ibbi.gov.in/resolution-plans?page=3",
       "first_seen_at": "2026-10-05T18:12:45.908668",
-      "last_seen_at": "2026-10-08T09:11:57.384400",
+      "last_seen_at": "2026-10-08T18:56:13.169140",
       "pdf_sha256": null
     },
     {
@@ -795,7 +795,7 @@
       "form_g_url": "https://ibbi.gov.in//uploads/resolution_plan/c10403d68d56f40d5d8dd684fdc692d9.pdf",
       "listing_url": "https://ibbi.gov.in/resolution-plans?page=3",
       "first_seen_at": "2026-10-05T18:12:45.911347",
-      "last_seen_at": "2026-10-08T09:11:57.385893",
+      "last_seen_at": "2026-10-08T18:56:13.171612",
       "pdf_sha256": null
     },
     {
@@ -815,7 +815,7 @@
       "form_g_url": "https://ibbi.gov.in//uploads/resolution_plan/2026-09-17-125255-k3t4f-645ae05853b8da6884ec20b3a2a7e2b6.pdf",
       "listing_url": "https://ibbi.gov.in/resolution-plans?page=3",
       "first_seen_at": "2026-10-05T18:12:45.912670",
-      "last_seen_at": "2026-10-08T09:11:58.199418",
+      "last_seen_at": "2026-10-08T18:56:13.870606",
       "pdf_sha256": null
     },
     {
@@ -835,7 +835,7 @@
       "form_g_url": "https://ibbi.gov.in//uploads/resolution_plan/37ab40984ea8ee40dda33247726adbd3.pdf",
       "listing_url": "https://ibbi.gov.in/resolution-plans?page=3",
       "first_seen_at": "2026-10-05T18:12:45.914259",
-      "last_seen_at": "2026-10-08T09:11:57.386640",
+      "last_seen_at": "2026-10-08T18:56:13.172840",
       "pdf_sha256": null
     },
     {
@@ -855,7 +855,7 @@
       "form_g_url": "https://ibbi.gov.in//uploads/resolution_plan/3c60481fd0597277eec32baa55020cbf.pdf",
       "listing_url": "https://ibbi.gov.in/resolution-plans?page=3",
       "first_seen_at": "2026-10-05T18:12:45.918166",
-      "last_seen_at": "2026-10-08T09:11:57.390342",
+      "last_seen_at": "2026-10-08T18:56:13.179049",
       "pdf_sha256": null
     },
     {
@@ -875,7 +875,7 @@
       "form_g_url": "https://ibbi.gov.in//uploads/resolution_plan/946d751d0a52c5212c82e8a4ab2cd779.pdf",
       "listing_url": "https://ibbi.gov.in/resolution-plans?page=3",
       "first_seen_at": "2026-10-05T18:12:45.922716",
-      "last_seen_at": "2026-10-08T09:11:57.388124",
+      "last_seen_at": "2026-10-08T18:56:13.175336",
       "pdf_sha256": null
     },
     {
@@ -895,7 +895,7 @@
       "form_g_url": "https://ibbi.gov.in//uploads/resolution_plan/825a49a64ad2f2b5eb06f3ffba05dc1c.pdf",
       "listing_url": "https://ibbi.gov.in/resolution-plans?page=3",
       "first_seen_at": "2026-10-05T18:12:45.924057",
-      "last_seen_at": "2026-10-08T09:11:58.200300",
+      "last_seen_at": "2026-10-08T18:56:13.871906",
       "pdf_sha256": null
     },
     {
@@ -915,7 +915,7 @@
       "form_g_url": "https://ibbi.gov.in//uploads/resolution_plan/890c2a60f4a1bab731345348f63f251e.pdf",
       "listing_url": "https://ibbi.gov.in/resolution-plans?page=3",
       "first_seen_at": "2026-10-05T18:12:45.925469",
-      "last_seen_at": "2026-10-08T09:11:58.201184",
+      "last_seen_at": "2026-10-08T18:56:13.873514",
       "pdf_sha256": null
     },
     {
@@ -935,7 +935,7 @@
       "form_g_url": "https://ibbi.gov.in//uploads/resolution_plan/2026-09-16-182944-6ymbc-77489d7cbc653b5f7e7085e218bec5f4.pdf",
       "listing_url": "https://ibbi.gov.in/resolution-plans?page=4",
       "first_seen_at": "2026-10-05T18:12:46.628066",
-      "last_seen_at": "2026-10-08T09:11:58.203691",
+      "last_seen_at": "2026-10-08T18:56:13.879036",
       "pdf_sha256": null
     },
     {
@@ -955,7 +955,7 @@
       "form_g_url": "https://ibbi.gov.in//uploads/resolution_plan/3ee4b411b067012aae4c4bc76c2b961c.pdf",
       "listing_url": "https://ibbi.gov.in/resolution-plans?page=4",
       "first_seen_at": "2026-10-05T18:12:46.631134",
-      "last_seen_at": "2026-10-08T09:11:58.204520",
+      "last_seen_at": "2026-10-08T18:56:13.880719",
       "pdf_sha256": null
     },
     {
@@ -975,7 +975,7 @@
       "form_g_url": "https://ibbi.gov.in//uploads/resolution_plan/4804d4f438f242ac86730b99222f5c65.pdf",
       "listing_url": "https://ibbi.gov.in/resolution-plans?page=4",
       "first_seen_at": "2026-10-05T18:12:46.632467",
-      "last_seen_at": "2026-10-08T09:11:58.205304",
+      "last_seen_at": "2026-10-08T18:56:13.882580",
       "pdf_sha256": null
     },
     {
@@ -995,7 +995,7 @@
       "form_g_url": "https://ibbi.gov.in//uploads/resolution_plan/da3ec03e21fcb75e52380042b630a4f8.pdf",
       "listing_url": "https://ibbi.gov.in/resolution-plans?page=4",
       "first_seen_at": "2026-10-05T18:12:46.635457",
-      "last_seen_at": "2026-10-08T09:11:58.207772",
+      "last_seen_at": "2026-10-08T18:56:13.887631",
       "pdf_sha256": null
     }
   ]
