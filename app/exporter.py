@@ -12,6 +12,7 @@ from .view import (
     days_left,
     effective_classification,
     in_working_window,
+    missing_from_latest_listing,
     needs_review,
     priority_for,
     status_for,
@@ -37,6 +38,7 @@ def build_xlsx(db: Session) -> bytes:
     ).all())
     rows = [(n, m) for n, m in rows if in_working_window(n, today)]
     rows.sort(key=lambda nm: working_sort_key(nm[0], today))
+    latest_run = db.scalar(select(CrawlRun).order_by(CrawlRun.started_at.desc()).limit(1))
 
     def write_notice_sheet(name: str, source_rows, review_only: bool = False):
         ws = wb.add_worksheet(name[:31])
@@ -50,7 +52,8 @@ def build_xlsx(db: Session) -> bytes:
         out_r = 1
         for notice, matter in source_rows:
             cls = effective_classification(matter, notice)
-            review = needs_review(cls)
+            source_missing = missing_from_latest_listing(notice, latest_run)
+            review = needs_review(cls) or source_missing
             if review_only and not review:
                 continue
             dl = days_left(notice, today)
@@ -62,7 +65,7 @@ def build_xlsx(db: Session) -> bytes:
                 notice.form_g_url, notice.listing_url,
                 notice.first_seen_at.replace(tzinfo=None) if notice.first_seen_at else None,
                 notice.last_seen_at.replace(tzinfo=None) if notice.last_seen_at else None,
-                'Review' if review else 'Auto-classified',
+                'Not in latest IBBI listing - verify with RP' if source_missing else ('Review' if review else 'Auto-classified'),
             ]
             row_fmt = closed_fmt if status == 'Closed recently' else None
             for c, v in enumerate(values):
@@ -78,11 +81,11 @@ def build_xlsx(db: Session) -> bytes:
             if status == 'Open' and dl is not None and 0 <= dl <= 7:
                 ws.set_row(out_r, None, urgent_fmt)
             if review:
-                ws.write(out_r, 16, 'Review', review_fmt)
+                ws.write(out_r, 16, 'Not in latest IBBI listing - verify with RP' if source_missing else 'Review', review_fmt)
             out_r += 1
         ws.freeze_panes(1, 0)
         ws.autofilter(0, 0, max(out_r - 1, 1), len(headers) - 1)
-        widths = [14,16,30,22,22,22,12,15,10,26,9,48,12,12,20,20,16]
+        widths = [14,16,30,22,22,22,12,15,10,26,9,48,12,12,20,20,44]
         for c, w in enumerate(widths):
             ws.set_column(c, c, w)
 

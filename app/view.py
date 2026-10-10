@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import date
+from datetime import date, timedelta
 
 from .classifier import Classification, classify
 from .models import Matter, Notice
@@ -8,6 +8,23 @@ from .models import Matter, Notice
 FUTURE_DAYS = 30
 RECENTLY_CLOSED_DAYS = 10
 REVIEW_THRESHOLD = 0.80
+
+
+def missing_from_latest_listing(notice: Notice, latest_run) -> bool:
+    """Report missing previously-known notices; never infer withdrawal.
+
+    A successful full-source crawl is necessary for meaningful source presence.
+    SQLite may return naive datetimes while API timestamps can be aware; compare
+    UTC-clock values from the same stored database. The two-minute margin follows
+    the existing complete-source audit's tolerance.
+    """
+    if not latest_run or latest_run.status != 'success' or not latest_run.started_at:
+        return False
+    if not notice.last_seen_at:
+        return True
+    started = latest_run.started_at.replace(tzinfo=None)
+    seen = notice.last_seen_at.replace(tzinfo=None)
+    return seen < started - timedelta(minutes=2)
 
 
 def days_left(notice: Notice, as_of: date | None = None) -> int | None:

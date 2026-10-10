@@ -16,6 +16,7 @@ from .view import (
     days_left,
     effective_classification,
     in_working_window,
+    missing_from_latest_listing,
     needs_review,
     priority_for,
     status_for,
@@ -42,10 +43,13 @@ def build(output_dir: Path) -> None:
 
     rows = [(n, m) for n, m in all_rows if in_working_window(n, today)]
     rows.sort(key=lambda nm: working_sort_key(nm[0], today))
+    source_missing_count = sum(1 for n, _ in rows if missing_from_latest_listing(n, latest))
+    open_missing_count = sum(1 for n, _ in rows if status_for(n, today) == 'Open' and missing_from_latest_listing(n, latest))
 
     payload = []
     for n, m in rows:
         c = effective_classification(m, n)
+        source_missing = missing_from_latest_listing(n, latest)
         dl = days_left(n, today)
         payload.append({
             'corporate_debtor': m.debtor_name,
@@ -53,7 +57,9 @@ def build(output_dir: Path) -> None:
             'industry': c.industry,
             'subindustry': c.subindustry,
             'confidence': round(float(c.confidence or 0), 2),
-            'needs_review': needs_review(c),
+            'needs_review': needs_review(c) or source_missing,
+            'source_alert': source_missing,
+            'source_status': 'Not found in latest complete IBBI listing — verify with RP' if source_missing else 'Seen in latest listing',
             'status': status_for(n, today),
             'priority': priority_for(n, today),
             'eoi_deadline': _iso(n.eoi_deadline),
@@ -82,6 +88,8 @@ def build(output_dir: Path) -> None:
             'total_records_reported': latest.total_records_reported,
         } if latest else None,
         'count': len(payload),
+        'source_discrepancy_count': source_missing_count,
+        'open_source_discrepancies': open_missing_count,
     }
     (output_dir / 'data.json').write_text(json.dumps({'meta': meta, 'rows': payload}, ensure_ascii=False, indent=2), encoding='utf-8')
     (output_dir / 'runs.json').write_text(json.dumps([{
@@ -119,8 +127,8 @@ main{{padding:22px;max-width:1600px;margin:auto}}.stats{{display:grid;grid-templ
 <script>
 let DATA=[];
 function esc(s){{return String(s??'').replace(/[&<>"']/g,c=>({{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}}[c]))}}
-function render(){{let q=document.querySelector('#q').value.toLowerCase(), ind=document.querySelector('#industry').value, rv=document.querySelector('#review').value;let rows=DATA.filter(r=>(!ind||r.industry===ind)&&(!rv||(rv==='yes')===r.needs_review)&&(!q||[r.corporate_debtor,r.rp,r.remarks,r.cin].join(' ').toLowerCase().includes(q)));document.querySelector('#rows').innerHTML=rows.map(r=>`<tr class="${{r.status==='Closed recently'?'closed':''}}"><td class="${{r.priority==='Urgent'?'urgent':''}}">${{esc(r.priority)}}</td><td class="${{r.status==='Open'?'status-open':'status-closed'}}">${{esc(r.status)}}</td><td><b>${{esc(r.corporate_debtor)}}</b><br><span class="muted">${{esc(r.cin||'')}}</span></td><td><span class="pill">${{esc(r.industry)}}</span><br><span class="muted">${{esc(r.subindustry||'')}}</span></td><td>${{esc(r.eoi_deadline||'—')}}</td><td class="${{r.days_left!==null&&r.days_left>=0&&r.days_left<=7?'urgent':''}}">${{r.days_left??'—'}}</td><td>${{esc(r.rp||'—')}}</td><td>${{r.revision}}</td><td class="${{r.needs_review?'review':'oktxt'}}">${{r.needs_review?'Review':'Auto'}}</td><td>${{esc(r.remarks||'')}}</td><td>${{r.form_g_url?`<a href="${{esc(r.form_g_url)}}" target="_blank" rel="noopener">Open</a>`:'—'}}</td></tr>`).join('');}}
-function updateHealth(meta){{const el=document.querySelector('#health');const t=Date.parse(meta.generated_at);const age=(Date.now()-t)/36e5;const good=Number.isFinite(age)&&age<=16&&meta.latest_run&&meta.latest_run.status==='success'&&meta.latest_run.errors===0;if(good){{el.className='health ok';el.textContent=`Source health: CURRENT · last verified ${{age.toFixed(1)}}h ago · ${{meta.latest_run.pages_fetched}} pages · ${{meta.latest_run.rows_seen}} rows · official total ${{meta.latest_run.total_records_reported??'—'}}`;}}else{{el.className='health bad';el.textContent=`SOURCE HEALTH WARNING: last fully verified refresh is ${{Number.isFinite(age)?age.toFixed(1):'?'}}h old. Verify IBBI directly before relying on this dashboard.`;}}}}
+function render(){{let q=document.querySelector('#q').value.toLowerCase(), ind=document.querySelector('#industry').value, rv=document.querySelector('#review').value;let rows=DATA.filter(r=>(!ind||r.industry===ind)&&(!rv||(rv==='yes')===r.needs_review)&&(!q||[r.corporate_debtor,r.rp,r.remarks,r.cin].join(' ').toLowerCase().includes(q)));document.querySelector('#rows').innerHTML=rows.map(r=>`<tr class="${{r.status==='Closed recently'?'closed':''}}"><td class="${{r.priority==='Urgent'?'urgent':''}}">${{esc(r.priority)}}</td><td class="${{r.status==='Open'?'status-open':'status-closed'}}">${{esc(r.status)}}</td><td><b>${{esc(r.corporate_debtor)}}</b><br><span class="muted">${{esc(r.cin||'')}}</span></td><td><span class="pill">${{esc(r.industry)}}</span><br><span class="muted">${{esc(r.subindustry||'')}}</span></td><td>${{esc(r.eoi_deadline||'—')}}</td><td class="${{r.days_left!==null&&r.days_left>=0&&r.days_left<=7?'urgent':''}}">${{r.days_left??'—'}}</td><td>${{esc(r.rp||'—')}}</td><td>${{r.revision}}</td><td class="${{r.needs_review?'review':'oktxt'}}">${{r.source_alert?'IBBI listing missing — verify':r.needs_review?'Review':'Auto'}}</td><td>${{esc(r.remarks||'')}}</td><td>${{r.form_g_url?`<a href="${{esc(r.form_g_url)}}" target="_blank" rel="noopener">Open</a>`:'—'}}</td></tr>`).join('');}}
+function updateHealth(meta){{const el=document.querySelector('#health');const t=Date.parse(meta.generated_at);const age=(Date.now()-t)/36e5;const good=Number.isFinite(age)&&age<=16&&meta.latest_run&&meta.latest_run.status==='success'&&meta.latest_run.errors===0;const missing=Number(meta.source_discrepancy_count||0);if(good&&missing===0){{el.className='health ok';el.textContent=`Source health: CURRENT · last verified ${{age.toFixed(1)}}h ago · ${{meta.latest_run.pages_fetched}} pages · ${{meta.latest_run.rows_seen}} rows · official total ${{meta.latest_run.total_records_reported??'—'}}`;}}else if(good&&missing>0){{el.className='health bad';el.textContent=`SOURCE DISCREPANCY: ${{missing}} previously seen working-window notice(s) absent from the latest complete IBBI listing (${{Number(meta.open_source_discrepancies||0)}} recorded as open). Historical links retained; verify with RP/IBBI. Last fully crawled ${{age.toFixed(1)}}h ago.`;}}else{{el.className='health bad';el.textContent=`SOURCE HEALTH WARNING: last fully verified refresh is ${{Number.isFinite(age)?age.toFixed(1):'?'}}h old. Verify IBBI directly before relying on this dashboard.`;}}}}
 fetch('data.json',{{cache:'no-store'}}).then(r=>r.json()).then(j=>{{DATA=j.rows;updateHealth(j.meta);document.querySelector('#s-open').textContent=DATA.filter(r=>r.status==='Open').length;document.querySelector('#s-urgent').textContent=DATA.filter(r=>r.status==='Open'&&r.days_left!==null&&r.days_left<=7).length;document.querySelector('#s-closed').textContent=DATA.filter(r=>r.status==='Closed recently').length;document.querySelector('#s-review').textContent=DATA.filter(r=>r.needs_review).length;let inds=[...new Set(DATA.map(r=>r.industry))].sort();document.querySelector('#industry').innerHTML+=[...inds].map(x=>`<option>${{esc(x)}}</option>`).join('');if(j.meta.latest_run)document.querySelector('#run-status').innerHTML=` &nbsp; <b>Last crawl:</b> ${{esc(j.meta.latest_run.status)}} · ${{j.meta.latest_run.rows_seen}} rows · ${{j.meta.latest_run.errors}} errors`;render();}}).catch(e=>{{document.querySelector('#health').className='health bad';document.querySelector('#health').textContent='SOURCE HEALTH WARNING: generated dataset could not be loaded.';document.querySelector('#rows').innerHTML='<tr><td colspan="11">No generated dataset yet. Run the workflow once.</td></tr>';}});
 ['q','industry','review'].forEach(id=>document.querySelector('#'+id).addEventListener(id==='q'?'input':'change',render));
 </script></body></html>'''
