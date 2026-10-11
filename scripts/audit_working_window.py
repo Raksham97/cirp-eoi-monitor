@@ -16,6 +16,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from app.db import SessionLocal, init_db
+from app.source_errors import is_transient_source_error, SourceTemporarilyUnavailable
 from app.models import CrawlRun, Notice
 from app.view import FUTURE_DAYS, RECENTLY_CLOSED_DAYS
 
@@ -52,6 +53,8 @@ def live_total() -> int:
             last = exc
             if attempt < 3:
                 time.sleep(2 ** attempt)
+    if is_transient_source_error(last):
+        raise SourceTemporarilyUnavailable(f'end-of-crawl source check exhausted: {last}') from last
     raise RuntimeError(f'could not verify live IBBI total: {last}')
 
 
@@ -87,7 +90,11 @@ def main() -> int:
             raise SystemExit(
                 f'AUDIT FAIL: IBBI total changed during run: preflight={canary_total} crawl={total}'
             )
-        end_total = live_total()
+        try:
+            end_total = live_total()
+        except SourceTemporarilyUnavailable as exc:
+            print(f'::warning::IBBI TEMPORARILY UNAVAILABLE: {exc}; no data will publish.', flush=True)
+            return 75
         if end_total != total:
             raise SystemExit(
                 f'AUDIT FAIL: IBBI total changed before verification completed: crawl={total} end={end_total}'

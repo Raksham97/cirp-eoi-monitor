@@ -58,7 +58,7 @@ def main():
             if run.status != 'success':
                 if run.error_summary:
                     print(run.error_summary)
-                raise SystemExit(2)
+                raise SystemExit(75 if run.status == 'source_unavailable' else 2)
         elif args.cmd == 'export':
             payload = build_xlsx(db)
             Path(args.output).write_bytes(payload)

@@ -12,6 +12,7 @@ from .classifier import classify
 from .config import Settings
 from .models import CrawlRun, Matter, Notice
 from .sources.ibbi import IBBIClient, IBBIRow, stable_json
+from .source_errors import is_transient_source_error
 
 
 def normalize_name(name: str) -> str:
@@ -267,7 +268,8 @@ def ingest(
         else:
             run.status = 'success'
     except Exception as exc:
-        run.status = 'failed'
+        # The run is *not* publishable; distinguish unavailable transport from invalid source data.
+        run.status = 'source_unavailable' if is_transient_source_error(exc) else 'failed'
         run.errors += 1
         errors.append(f'run: {type(exc).__name__}: {exc}')
     finally:

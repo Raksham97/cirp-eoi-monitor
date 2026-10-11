@@ -11,31 +11,50 @@ from pathlib import Path
 import requests
 import time
 from bs4 import BeautifulSoup
+import sys
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+from app.source_errors import is_transient_source_error, SourceTemporarilyUnavailable
 
 URL = 'https://ibbi.gov.in/resolution-plans'
 TOTAL_RE = re.compile(r'Total\s+Records\s*:\s*([0-9,]+)', re.I)
+
+
+def fetch_landing_page(get=requests.get, sleep=time.sleep, attempts: int = 4):
+    """Retry only transport/429/5xx errors; schema, 4xx and empty HTML remain fatal."""
+    for attempt in range(attempts):
+        try:
+            response = get(URL, timeout=(8, 25), headers={
+                'User-Agent': 'CIRP-EOI-Canary/1.0 (+public source health check)',
+                'Cache-Control': 'no-cache',
+            })
+            response.raise_for_status()
+            if not response.content:
+                raise RuntimeError('empty upstream response')
+            return response
+        except Exception as exc:
+            if not is_transient_source_error(exc):
+                raise
+            if attempt == attempts - 1:
+                raise SourceTemporarilyUnavailable(
+                    f'{type(exc).__name__}: {exc} after {attempts} attempts'
+                ) from exc
+            print(f'IBBI transient source error, attempt {attempt+1}/{attempts}: '
+                  f'{type(exc).__name__}; retrying', flush=True)
+            sleep(min(3 * (2 ** attempt), 18))
+    raise AssertionError('unreachable')
 
 
 def main() -> int:
     p = argparse.ArgumentParser()
     p.add_argument('--output', default='data/ibbi_canary.json')
     args = p.parse_args()
-    last = None
-    for attempt in range(4):
-        try:
-            r = requests.get(URL, timeout=30, headers={
-                'User-Agent': 'CIRP-EOI-Canary/1.0 (+public source health check)',
-                'Cache-Control': 'no-cache',
-            })
-            r.raise_for_status()
-            if not r.content:
-                raise RuntimeError('empty upstream response')
-            break
-        except Exception as exc:
-            last = exc
-            if attempt == 3:
-                raise
-            time.sleep(2 ** attempt)
+    try:
+        r = fetch_landing_page()
+    except SourceTemporarilyUnavailable as exc:
+        print(f'::warning::IBBI TEMPORARILY UNAVAILABLE: {exc}; verified data remains unchanged.', flush=True)
+        return 75  # EX_TEMPFAIL: workflow skips publication unless stale-data guard escalates
     soup = BeautifulSoup(r.text, 'html.parser')
     chosen = None
     for table in soup.find_all('table'):

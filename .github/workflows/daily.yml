@@ -4,6 +4,7 @@ on:
   workflow_dispatch:
   schedule:
     - cron: '30 2,12 * * *' # approx 08:00 and 18:00 IST
+    - cron: '30 4,14 * * *' # recovery slots: about 2 hours after each main run; skip when fresh
 
 permissions:
   contents: write
@@ -26,56 +27,122 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Check whether delayed recovery is needed
+        id: due
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          SCHEDULE: ${{ github.event.schedule }}
+        run: |
+          set -euo pipefail
+          if [[ "$EVENT_NAME" == 'schedule' && "$SCHEDULE" == '30 4,14 * * *' ]]; then
+            python3 scripts/source_outage_policy.py --mode recovery >> "$GITHUB_OUTPUT"
+          else
+            echo 'run=true' >> "$GITHUB_OUTPUT"
+          fi
+
       - uses: actions/setup-python@v6
+        if: steps.due.outputs.run == 'true'
         with:
           python-version: '3.12'
           cache: pip
 
       - name: Install dependencies
+        if: steps.due.outputs.run == 'true'
         run: pip install -r requirements.txt pytest
 
       - name: Run reliability tests
+        if: steps.due.outputs.run == 'true'
         run: python -m pytest -q
 
       - name: Restore durable state
+        if: steps.due.outputs.run == 'true'
         run: python scripts/state.py restore
 
       - name: Independent IBBI source canary
-        run: python scripts/ibbi_canary.py
+        id: canary
+        if: steps.due.outputs.run == 'true'
+        shell: bash
+        run: |
+          set +e
+          python scripts/ibbi_canary.py
+          code=$?
+          set -e
+          if [[ "$code" == '75' ]]; then
+            echo 'available=false' >> "$GITHUB_OUTPUT"
+          elif [[ "$code" == '0' ]]; then
+            echo 'available=true' >> "$GITHUB_OUTPUT"
+          else
+            exit "$code"
+          fi
 
       - name: Ingest complete IBBI Form G listing
+        id: ingest
+        if: steps.canary.outputs.available == 'true'
         env:
           DATABASE_URL: sqlite+pysqlite:///./cirp_eoi.sqlite3
           APP_PASSWORD: ''
           FETCH_PDFS: 'false'
           REQUEST_TIMEOUT_SECONDS: '25'
-        run: >-
-          python -m app.cli ingest
-          --pages 400
-          --store-days-back 120
+        shell: bash
+        run: |
+          set +e
+          python -m app.cli ingest --pages 400 --store-days-back 120
+          code=$?
+          set -e
+          if [[ "$code" == '75' ]]; then
+            echo 'available=false' >> "$GITHUB_OUTPUT"
+          elif [[ "$code" == '0' ]]; then
+            echo 'available=true' >> "$GITHUB_OUTPUT"
+          else
+            exit "$code"
+          fi
 
       - name: Audit complete-source and working-window coverage
+        id: audit
+        if: steps.ingest.outputs.available == 'true'
         env:
           DATABASE_URL: sqlite+pysqlite:///./cirp_eoi.sqlite3
-        run: python scripts/audit_working_window.py
+        shell: bash
+        run: |
+          set +e
+          python scripts/audit_working_window.py
+          code=$?
+          set -e
+          if [[ "$code" == '75' ]]; then
+            echo 'available=false' >> "$GITHUB_OUTPUT"
+          elif [[ "$code" == '0' ]]; then
+            echo 'available=true' >> "$GITHUB_OUTPUT"
+          else
+            exit "$code"
+          fi
+
+      - name: Preserve verified data during temporary source outage
+        if: steps.due.outputs.run == 'true' && (steps.canary.outputs.available == 'false' || steps.ingest.outputs.available == 'false' || steps.audit.outputs.available == 'false')
+        run: python scripts/source_outage_policy.py --mode outage --max-hours 30
 
       - name: Build Excel
+        if: steps.audit.outputs.available == 'true'
         env:
           DATABASE_URL: sqlite+pysqlite:///./cirp_eoi.sqlite3
         run: python -m app.cli export --output docs/cirp-eoi-monitor.xlsx
 
       - name: Build static dashboard
+        if: steps.audit.outputs.available == 'true'
         env:
           DATABASE_URL: sqlite+pysqlite:///./cirp_eoi.sqlite3
         run: python -m app.static_site --output docs
 
       - name: Persist database as text state
+        if: steps.audit.outputs.available == 'true'
         run: python scripts/state.py dump
 
       - name: Record heartbeat
+        if: steps.audit.outputs.available == 'true'
         run: date -u +'%Y-%m-%dT%H:%M:%SZ' > data/last_successful_run.txt
 
       - name: Commit only fully audited state and generated files
+        if: steps.audit.outputs.available == 'true'
         run: |
           git config user.name 'cirp-eoi-bot'
           git config user.email 'actions@users.noreply.github.com'
@@ -86,13 +153,16 @@ jobs:
           fi
 
       - name: Configure Pages
+        if: steps.audit.outputs.available == 'true'
         uses: actions/configure-pages@v5
 
       - name: Upload Pages artifact
+        if: steps.audit.outputs.available == 'true'
         uses: actions/upload-pages-artifact@v3
         with:
           path: docs
 
       - name: Deploy Pages
+        if: steps.audit.outputs.available == 'true'
         id: deployment
         uses: actions/deploy-pages@v4
