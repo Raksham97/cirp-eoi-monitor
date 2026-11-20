@@ -1,5 +1,17 @@
 [
   {
+    "started_at": "2026-11-20T10:13:55.102970",
+    "finished_at": "2026-11-20T10:17:25.567652",
+    "status": "success",
+    "pages_fetched": 199,
+    "rows_seen": 3968,
+    "new_notices": 4,
+    "existing_notices": 407,
+    "errors": 0,
+    "error_summary": null,
+    "total_records_reported": 3968
+  },
+  {
     "started_at": "2026-11-19T20:51:07.062300",
     "finished_at": "2026-11-19T20:53:43.629168",
     "status": "success",
