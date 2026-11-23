@@ -1,5 +1,17 @@
 [
   {
+    "started_at": "2026-11-23T15:12:46.183114",
+    "finished_at": "2026-11-23T15:15:49.009993",
+    "status": "success",
+    "pages_fetched": 199,
+    "rows_seen": 3979,
+    "new_notices": 0,
+    "existing_notices": 410,
+    "errors": 0,
+    "error_summary": null,
+    "total_records_reported": 3979
+  },
+  {
     "started_at": "2026-11-23T10:57:09.315820",
     "finished_at": "2026-11-23T10:59:37.603688",
     "status": "success",
@@ -1183,18 +1195,6 @@
     "rows_seen": 3820,
     "new_notices": 0,
     "existing_notices": 374,
-    "errors": 0,
-    "error_summary": null,
-    "total_records_reported": 3820
-  },
-  {
-    "started_at": "2026-10-07T06:26:29.594367",
-    "finished_at": "2026-10-07T06:28:51.176401",
-    "status": "success",
-    "pages_fetched": 191,
-    "rows_seen": 3820,
-    "new_notices": 211,
-    "existing_notices": 163,
     "errors": 0,
     "error_summary": null,
     "total_records_reported": 3820
